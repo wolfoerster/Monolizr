@@ -23,7 +23,7 @@ MonolizrAudioProcessorEditor::MonolizrAudioProcessorEditor (MonolizrAudioProcess
     midiVolume.setTextBoxStyle(juce::Slider::NoTextBox, false, 90, 0);
     midiVolume.setPopupDisplayEnabled(true, false, this);
     midiVolume.setTextValueSuffix(" Volume");
-    midiVolume.setValue(1.0);
+    midiVolume.setValue(0.0);
 
     addAndMakeVisible(&midiVolume);
     midiVolume.addListener(this);
@@ -49,8 +49,8 @@ void MonolizrAudioProcessorEditor::paint (juce::Graphics& g)
     g.setFont(15.0f);
     g.drawFittedText("Midi Volume", 0, 0, getWidth(), 30, juce::Justification::centred, 1);
 
-    //std::string str = std::to_string(audioProcessor.noteOnVel);
-    //g.drawFittedText(str, 0, 30, getWidth(), 30, juce::Justification::centred, 1);
+    std::string str = std::to_string(audioProcessor.noteOnVel);
+    g.drawFittedText(str, 0, 30, getWidth(), 30, juce::Justification::centred, 1);
 }
 
 void MonolizrAudioProcessorEditor::resized()
