@@ -14,7 +14,8 @@
 //==============================================================================
 /**
 */
-class MonolizrAudioProcessorEditor  : public juce::AudioProcessorEditor
+class MonolizrAudioProcessorEditor  : public juce::AudioProcessorEditor,
+    private juce::Slider::Listener // [2]
 {
 public:
     MonolizrAudioProcessorEditor (MonolizrAudioProcessor&);
@@ -25,9 +26,11 @@ public:
     void resized() override;
 
 private:
+    void sliderValueChanged(juce::Slider* slider) override; // [3]
+
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     MonolizrAudioProcessor& audioProcessor;
-    juce::Slider midiVolume;
+    juce::Slider midiVolume; // [1]
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MonolizrAudioProcessorEditor)
 };
