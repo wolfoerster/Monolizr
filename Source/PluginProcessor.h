@@ -53,8 +53,16 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
-    //==============================================================================
-    float noteOnVel = 0;
+    /// <summary>
+    /// The amount of mono (= mononess) in percent.
+    /// 0 = stereo, 100 = mono.
+    /// </summary>
+    float mononess = 0;
+
+    /// <summary>
+    /// For debug only.
+    /// </summary>
+    float numChannels = 0;
 
 private:
     //==============================================================================

@@ -14,19 +14,17 @@
 MonolizrAudioProcessorEditor::MonolizrAudioProcessorEditor (MonolizrAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
-    // Make sure that before the constructor has finished, you've set the
-    // editor's size to whatever you need it to be.
-    setSize (200, 200);
+    setSize (360, 200);
 
-    midiVolume.setSliderStyle(juce::Slider::LinearBarVertical);
-    midiVolume.setRange(0.0, 100.0, 1.0);
-    midiVolume.setTextBoxStyle(juce::Slider::NoTextBox, false, 90, 0);
-    midiVolume.setPopupDisplayEnabled(true, false, this);
-    midiVolume.setTextValueSuffix(" Volume");
-    midiVolume.setValue(0.0);
+    monoSlider.setSliderStyle(juce::Slider::LinearBar);
+    monoSlider.setRange(0.0, 100.0, 1.0);
+    monoSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 90, 0);
+    monoSlider.setPopupDisplayEnabled(true, false, this);
+    monoSlider.setTextValueSuffix(" %");
+    monoSlider.setValue(0.0);
 
-    addAndMakeVisible(&midiVolume);
-    midiVolume.addListener(this);
+    addAndMakeVisible(&monoSlider);
+    monoSlider.addListener(this);
 }
 
 MonolizrAudioProcessorEditor::~MonolizrAudioProcessorEditor()
@@ -36,7 +34,7 @@ MonolizrAudioProcessorEditor::~MonolizrAudioProcessorEditor()
 //==============================================================================
 void MonolizrAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
 {
-    audioProcessor.noteOnVel = (float)midiVolume.getValue();
+    audioProcessor.mononess = (float)monoSlider.getValue();
 }
 
 void MonolizrAudioProcessorEditor::paint (juce::Graphics& g)
@@ -47,13 +45,13 @@ void MonolizrAudioProcessorEditor::paint (juce::Graphics& g)
     g.setColour(juce::Colours::black);
     // set the font size and draw text to the screen
     g.setFont(15.0f);
-    g.drawFittedText("Midi Volume", 0, 0, getWidth(), 30, juce::Justification::centred, 1);
+    g.drawFittedText("Amount of Mono", 0, 0, getWidth(), 30, juce::Justification::centred, 1);
 
-    std::string str = std::to_string(audioProcessor.noteOnVel);
-    g.drawFittedText(str, 0, 30, getWidth(), 30, juce::Justification::centred, 1);
+    std::string str = std::to_string(audioProcessor.numChannels);
+    g.drawFittedText(str, 0, 130, getWidth(), 30, juce::Justification::centred, 1);
 }
 
 void MonolizrAudioProcessorEditor::resized()
 {
-    midiVolume.setBounds(40, 30, 20, getHeight() - 60);
+    monoSlider.setBounds(10, 30, getWidth() - 20, 20);
 }

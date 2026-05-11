@@ -109,7 +109,7 @@ void MonolizrAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
     jassert(buffer.getNumChannels() == 2);
 
     const int numSamples = buffer.getNumSamples();
-    const float bleed = noteOnVel / 200.0f;
+    const float bleed = mononess / 200.0f;
 
     float* leftChannel = buffer.getWritePointer(0);
     float* rightChannel = buffer.getWritePointer(1);
@@ -119,8 +119,14 @@ void MonolizrAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
         const float left = leftChannel[i];
         const float right = rightChannel[i];
 
+        // var ratio = left / right
+
         leftChannel[i] = left * (1.0f - bleed) + right * bleed;
         rightChannel[i] = right * (1.0f - bleed) + left * bleed;
+
+        // jenachdem, ob das signal hauptsaechlich von links oder rechts kam (ratio)
+        // jetzt noch nach links oder rechts verschieben. bei bleedAmount = 0 gar nicht
+        // bei 1 volles ratio?
     }
 }
 
