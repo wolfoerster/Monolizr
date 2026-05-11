@@ -1,11 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include <JuceHeader.h>
@@ -27,6 +19,8 @@ public:
 
 private:
     juce::Slider monoSlider;
+    juce::Slider posiSlider;
+    void InitSlider(juce::Slider& monoSlider);
     void sliderValueChanged(juce::Slider* slider) override;
 
     // This reference is provided as a quick way for your editor to

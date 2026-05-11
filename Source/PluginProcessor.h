@@ -1,11 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include <JuceHeader.h>
@@ -54,13 +46,17 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
     /// <summary>
-    /// The amount of mono (= mononess) in percent.
-    /// 0 = stereo, 100 = mono.
+    /// The amount of signal being mono in percent (0 = stereo, 100 = mono).
     /// </summary>
     float mononess = 0;
 
     /// <summary>
-    /// For debug only.
+    /// The position of the mono signal between -100 (full left) and +100 (full right).
+    /// </summary>
+    float position = 0;
+
+    /// <summary>
+    /// For debugging only.
     /// </summary>
     float numChannels = 0;
 
