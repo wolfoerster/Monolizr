@@ -96,32 +96,6 @@ bool MonolizrAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts)
         && layouts.getMainOutputChannelSet() == juce::AudioChannelSet::stereo();
 }
 
-void MonolizrAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
-{
-    jassert(buffer.getNumChannels() == 2);
-
-    const int numSamples = buffer.getNumSamples();
-    const float bleed = mononess / 200.0f;
-
-    float* leftChannel = buffer.getWritePointer(0);
-    float* rightChannel = buffer.getWritePointer(1);
-
-    for (int i = 0; i < numSamples; ++i)
-    {
-        const float left = leftChannel[i];
-        const float right = rightChannel[i];
-
-        // var ratio = left / right
-
-        leftChannel[i] = left * (1.0f - bleed) + right * bleed;
-        rightChannel[i] = right * (1.0f - bleed) + left * bleed;
-
-        // jenachdem, ob das signal hauptsaechlich von links oder rechts kam (ratio)
-        // jetzt noch nach links oder rechts verschieben. bei bleedAmount = 0 gar nicht
-        // bei 1 volles ratio?
-    }
-}
-
 //==============================================================================
 bool MonolizrAudioProcessor::hasEditor() const
 {
@@ -152,4 +126,48 @@ void MonolizrAudioProcessor::setStateInformation (const void* data, int sizeInBy
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new MonolizrAudioProcessor();
+}
+
+/// <summary>
+/// This is the core method to modify the stereo signal.
+/// </summary>
+void MonolizrAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+{
+    //--- just for debugging begin
+    numChannels = buffer.getNumChannels();
+    jassert(numChannels == 2);
+    //--- just for debugging end
+
+    const int numSamples = buffer.getNumSamples();
+    float* leftChannel = buffer.getWritePointer(0);
+    float* rightChannel = buffer.getWritePointer(1);
+
+    //--- mix channels according parameter 'mononess' (0 .. 100)
+    const float amount = mononess / 200.0f; // from 0.0 to 0.5
+
+    for (int i = 0; i < numSamples; ++i)
+    {
+        const float left = leftChannel[i];
+        const float right = rightChannel[i];
+
+        leftChannel[i] = left * (1.0f - amount) + right * amount;
+        rightChannel[i] = right * (1.0f - amount) + left * amount;
+    }
+
+    //--- for full stereo we're done
+    if (mononess > 99)
+        return;
+
+    //--- for full mono move signal to parameter 'position' (-100 (L) .. +100 (R))
+    //--- else move to center gradually
+    const float f = position / 100.0f; // from -1.0 to +1.0
+    const float a = mononess / 100.0f;
+
+    for (int i = 0; i < numSamples; ++i)
+    {
+        const float left = leftChannel[i];
+        const float right = rightChannel[i];
+
+        // nimm links was weg, tu rechts was drauf, oder?
+    }
 }
