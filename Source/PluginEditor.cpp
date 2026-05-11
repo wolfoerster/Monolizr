@@ -20,11 +20,19 @@ MonolizrAudioProcessorEditor::~MonolizrAudioProcessorEditor()
 void MonolizrAudioProcessorEditor::InitSlider(juce::Slider& slider)
 {
     slider.setSliderStyle(juce::Slider::LinearBar);
-    slider.setRange(0.0, 100.0, 1.0);
     slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 90, 0);
     slider.setPopupDisplayEnabled(true, false, this);
     slider.setTextValueSuffix(" %");
     slider.setValue(0.0);
+
+    if (&slider == &monoSlider)
+    {
+        slider.setRange(0.0, 100.0, 1.0);
+    }
+    else
+    {
+        slider.setRange(-100.0, 100.0, 1.0);
+    }
 
     addAndMakeVisible(slider);
     slider.addListener(this);
@@ -32,8 +40,10 @@ void MonolizrAudioProcessorEditor::InitSlider(juce::Slider& slider)
 
 void MonolizrAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
 {
-    audioProcessor.mononess = (float)monoSlider.getValue();
-    audioProcessor.position = (float)posiSlider.getValue();
+    if (slider == &monoSlider)
+        audioProcessor.mononess = (float)monoSlider.getValue();
+    else
+        audioProcessor.position = (float)posiSlider.getValue();
 }
 
 void MonolizrAudioProcessorEditor::paint (juce::Graphics& g)
