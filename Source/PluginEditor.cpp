@@ -57,12 +57,12 @@ void MonolizrAudioProcessorEditor::paint (juce::Graphics& g)
     g.drawFittedText("Amount of signal being mono in %:", 0, 0, getWidth(), 30, juce::Justification::centred, 1);
     g.drawFittedText("Position of mono signal (-100 = left, +100 = right):", 0, 60, getWidth(), 30, juce::Justification::centred, 1);
 
-    std::string str = std::to_string(audioProcessor.numChannels);
+    std::string str = std::to_string(audioProcessor.maxSample);
     g.drawFittedText(str, 0, 130, getWidth(), 30, juce::Justification::centred, 1);
 }
 
 void MonolizrAudioProcessorEditor::resized()
 {
     monoSlider.setBounds(10, 30, getWidth() - 20, 20);
-    posiSlider.setBounds(10, 90, getWidth() - 20, 20);
+    posiSlider.setBounds(15, 90, getWidth() - 20, 20);
 }

@@ -133,41 +133,47 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 /// </summary>
 void MonolizrAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-    //--- just for debugging begin
-    numChannels = buffer.getNumChannels();
-    jassert(numChannels == 2);
-    //--- just for debugging end
-
-    const int numSamples = buffer.getNumSamples();
-    float* leftChannel = buffer.getWritePointer(0);
-    float* rightChannel = buffer.getWritePointer(1);
+    jassert(buffer.getNumChannels() == 2);
 
     //--- mix channels according parameter 'mononess' (0 .. 100)
     const float amount = mononess / 200.0f; // from 0.0 to 0.5
+    const int numSamples = buffer.getNumSamples();
+    float* leftChannel = buffer.getWritePointer(0);
+    float* rightChannel = buffer.getWritePointer(1);
 
     for (int i = 0; i < numSamples; ++i)
     {
         const float left = leftChannel[i];
         const float right = rightChannel[i];
+        maxSample = fmax(fmax(left, right), maxSample);
 
         leftChannel[i] = left * (1.0f - amount) + right * amount;
         rightChannel[i] = right * (1.0f - amount) + left * amount;
     }
 
     //--- for full stereo we're done
-    if (mononess > 99)
+    if (mononess < 1)
         return;
 
     //--- for full mono move signal to parameter 'position' (-100 (L) .. +100 (R))
     //--- else move to center gradually
-    const float f = position / 100.0f; // from -1.0 to +1.0
-    const float a = mononess / 100.0f;
+    const float m = mononess / 100.0f; // from 0 to 1
+    const float p = position / 100.0f; // from -1.0 to +1.0
 
     for (int i = 0; i < numSamples; ++i)
     {
         const float left = leftChannel[i];
         const float right = rightChannel[i];
 
-        // nimm links was weg, tu rechts was drauf, oder?
+        if (p < 0)
+        {
+            rightChannel[i] = right * (1 + m * p);
+            //leftChannel[i] = pythagoras?
+        }
+        else
+        {
+            leftChannel[i] = left * (1 - m * p);
+            //rightChannel[i] = pythagoras?
+        }
     }
 }

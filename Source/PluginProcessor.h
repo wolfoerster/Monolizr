@@ -58,7 +58,7 @@ public:
     /// <summary>
     /// For debugging only.
     /// </summary>
-    float numChannels = 0;
+    float maxSample = 0;
 
 private:
     //==============================================================================
