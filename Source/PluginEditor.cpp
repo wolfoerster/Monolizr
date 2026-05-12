@@ -51,8 +51,8 @@ void MonolizrAudioProcessorEditor::paint (juce::Graphics& g)
     g.fillAll(juce::Colours::white);
     g.setColour(juce::Colours::black);
 
-    LabelSlider(g, monoSlider, "Mononess", "Stereo", "Mono  ");
-    LabelSlider(g, posiSlider, "Balance", "   Left", "Right  ");
+    LabelSlider(g, monoSlider, "Mononess", "Stereo", "Mono ");
+    LabelSlider(g, posiSlider, "Balance", "   Left", "Right ");
 }
 
 void MonolizrAudioProcessorEditor::LabelSlider(
@@ -63,8 +63,8 @@ void MonolizrAudioProcessorEditor::LabelSlider(
     juce::String highLabel)
 {
     auto bounds = slider.getBounds();
-    const int x = bounds.getTopLeft().x;
-    const int y = bounds.getTopLeft().y;
+    const int x = bounds.getX();
+    const int y = bounds.getY();
     const int w = bounds.getWidth();
     const int h = bounds.getHeight();
 
