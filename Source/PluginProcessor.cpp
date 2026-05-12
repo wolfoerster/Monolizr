@@ -145,10 +145,9 @@ void MonolizrAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
     {
         const float left = leftChannel[i];
         const float right = rightChannel[i];
-        maxSample = fmax(fmax(left, right), maxSample);
 
-        leftChannel[i] = left * (1.0f - amount) + right * amount;
-        rightChannel[i] = right * (1.0f - amount) + left * amount;
+        leftChannel[i] = left * (1 - amount) + right * amount;
+        rightChannel[i] = right * (1 - amount) + left * amount;
     }
 
     //--- for full stereo we're done
@@ -166,16 +165,16 @@ void MonolizrAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
     {
         for (int i = 0; i < numSamples; ++i)
         {
-            leftChannel[i] *= (1 + m * m);
-            rightChannel[i] *= (1 + m * p);
+            leftChannel[i] *= (1 + mm);
+            rightChannel[i] *= (1 + mp);
         }
     }
     else
     {
         for (int i = 0; i < numSamples; ++i)
         {
-            leftChannel[i] *= (1 - m * p);
-            rightChannel[i] *= (1 + m * m);
+            leftChannel[i] *= (1 - mp);
+            rightChannel[i] *= (1 + mm);
         }
     }
 }

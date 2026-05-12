@@ -55,11 +55,6 @@ public:
     /// </summary>
     float position = 0;
 
-    /// <summary>
-    /// For debugging only.
-    /// </summary>
-    float maxSample = 0;
-
 private:
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MonolizrAudioProcessor)

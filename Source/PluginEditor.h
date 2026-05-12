@@ -16,6 +16,12 @@ public:
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
+    void LabelSlider(
+        juce::Graphics& g, 
+        juce::Slider& slider, 
+        juce::String name, 
+        juce::String lowLabel,
+        juce::String highLabel);
 
 private:
     juce::Slider monoSlider;
