@@ -150,14 +150,14 @@ void MonolizrAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
         rightChannel[i] = right * (1 - amount) + left * amount;
     }
 
-    //--- for full stereo we're done
-    if (mononess < 1)
+    //--- for full stereo or centered balance we're done
+    if (mononess < 1 || fabs(position) < 1)
         return;
 
     //--- for full mono move signal to parameter 'position' (-100 (L) .. +100 (R))
     //--- else move to center gradually
-    const float m = mononess / 100.0f; // from 0.0 to 1.0
     const float p = position / 100.0f; // from -1.0 to +1.0
+    const float m = mononess / 100.0f; // from 0.0 to 1.0
     const float mm = m * m;
     const float mp = m * p;
 
@@ -165,11 +165,11 @@ void MonolizrAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
     {
         for (int i = 0; i < numSamples; ++i)
         {
-            leftChannel[i] *= (1 + mm);
             rightChannel[i] *= (1 + mp);
+            leftChannel[i] *= (1 + mm);
         }
     }
-    else
+    else // to the right
     {
         for (int i = 0; i < numSamples; ++i)
         {
