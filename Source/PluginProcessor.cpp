@@ -135,12 +135,12 @@ void MonolizrAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
 {
     jassert(buffer.getNumChannels() == 2);
 
-    //--- mix channels according parameter 'mononess' (0 .. 100)
     const float amount = mononess / 200.0f; // from 0.0 to 0.5
     const int numSamples = buffer.getNumSamples();
     float* leftChannel = buffer.getWritePointer(0);
     float* rightChannel = buffer.getWritePointer(1);
 
+    //--- mix channels according to 'amount' (0.0 .. 0.5)
     for (int i = 0; i < numSamples; ++i)
     {
         const float left = leftChannel[i];
@@ -161,11 +161,14 @@ void MonolizrAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
     const float mm = m * m;
     const float mp = m * p;
 
-    if (p < 0) // to the left
+    if (p < 0) //--- to the left
     {
         for (int i = 0; i < numSamples; ++i)
         {
+            //--- decrease right channel
             rightChannel[i] *= (1 + mp);
+
+            //--- increase left channel
             leftChannel[i] *= (1 + mm);
         }
     }
@@ -173,7 +176,10 @@ void MonolizrAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
     {
         for (int i = 0; i < numSamples; ++i)
         {
+            //--- decrease left channel
             leftChannel[i] *= (1 - mp);
+
+            //--- increase right channel
             rightChannel[i] *= (1 + mm);
         }
     }

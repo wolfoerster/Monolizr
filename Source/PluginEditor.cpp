@@ -6,7 +6,7 @@
 MonolizrAudioProcessorEditor::MonolizrAudioProcessorEditor (MonolizrAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
-    setSize(240, 132);
+    setSize(240, 128);
     InitSlider(monoSlider);
     InitSlider(posiSlider);
 }
@@ -51,7 +51,7 @@ void MonolizrAudioProcessorEditor::paint (juce::Graphics& g)
     g.fillAll(juce::Colours::white);
     g.setColour(juce::Colours::black);
 
-    LabelSlider(g, monoSlider, "Mononess", "Stereo", "Mono ");
+    LabelSlider(g, monoSlider, "Mode", "Stereo", "Mono ");
     LabelSlider(g, posiSlider, "Balance", "   Left", "Right ");
 }
 
