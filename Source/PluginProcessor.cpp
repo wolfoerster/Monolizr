@@ -1,7 +1,5 @@
 ﻿#include "PluginProcessor.h"
 #include "PluginEditor.h"
-#include <format>
-#include <iostream>
 
 //==============================================================================
 MonolizrAudioProcessor::MonolizrAudioProcessor()
@@ -152,19 +150,16 @@ void MonolizrAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
         rightChannel[i] = right * (1 - amount) + left * amount;
     }
 
+    //--- for full mono move signal to parameter 'position' (-100 (L) .. +100 (R))
+    //--- else move to center gradually
+    m = mononess / 100.0f; // from 0.0 to 1.0
+    p = position / 100.0f; // from -1.0 to +1.0
+    mp = m * p;
+    mp2 = mp * 0.5;
+
     //--- for full stereo or centered balance we're done
     if (mononess < 1 || fabs(position) < 1)
         return;
-
-    //--- for full mono move signal to parameter 'position' (-100 (L) .. +100 (R))
-    //--- else move to center gradually
-    const float p = position / 100.0f; // from -1.0 to +1.0
-    const float m = mononess / 100.0f; // from 0.0 to 1.0
-    const float mm = m * m * m * m;
-    const float mp = m * p;
-
-    if (secondsPassed(1))
-        log(m, p);
 
     if (p < 0) //--- to the left
     {
@@ -174,7 +169,7 @@ void MonolizrAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
             rightChannel[i] *= (1 + mp);
 
             //--- increase left channel
-            leftChannel[i] *= (1 + mm);
+            leftChannel[i] *= (1 - mp2);
         }
     }
     else // to the right
@@ -185,7 +180,7 @@ void MonolizrAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
             leftChannel[i] *= (1 - mp);
 
             //--- increase right channel
-            rightChannel[i] *= (1 + mm);
+            rightChannel[i] *= (1 + mp2);
         }
     }
 }

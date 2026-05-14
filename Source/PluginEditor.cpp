@@ -1,4 +1,3 @@
-#include <string>
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
@@ -6,9 +5,19 @@
 MonolizrAudioProcessorEditor::MonolizrAudioProcessorEditor (MonolizrAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
-    setSize(240, 128);
+#if DEBUG
+    setSize(240, 160);
+#else
+    setSize(240, 132);
+#endif
     initSlider(monoSlider);
     initSlider(posiSlider);
+
+    addAndMakeVisible(label);
+    label.setColour(juce::Label::textColourId, juce::Colours::black);
+    label.setJustificationType(juce::Justification::centred);
+
+    startTimer(500);
 }
 
 MonolizrAudioProcessorEditor::~MonolizrAudioProcessorEditor()
@@ -71,7 +80,7 @@ void MonolizrAudioProcessorEditor::showSlider(
     const int y2 = y1 + bounds.getHeight();
 
     g.setFont(18.0f);
-    g.drawSingleLineText(name, (x1 + x2) / 2, y1 + 2, juce::Justification::centred);
+    g.drawSingleLineText(name, (x1 + x2) / 2, y1 + 2, juce::Justification::horizontallyCentred);
 
     g.setFont(15.0f);
     g.drawSingleLineText(lowLabel, x1, y2, juce::Justification::left);
@@ -84,4 +93,5 @@ void MonolizrAudioProcessorEditor::resized()
 {
     monoSlider.setBounds(10, 20, 100, 100);
     posiSlider.setBounds(130, 20, 100, 100);
+    label.setBounds(10, 130, getWidth() - 20, 30);
 }
