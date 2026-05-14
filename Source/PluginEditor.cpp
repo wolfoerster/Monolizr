@@ -7,8 +7,8 @@ MonolizrAudioProcessorEditor::MonolizrAudioProcessorEditor (MonolizrAudioProcess
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
     setSize(240, 128);
-    InitSlider(monoSlider);
-    InitSlider(posiSlider);
+    initSlider(monoSlider);
+    initSlider(posiSlider);
 }
 
 MonolizrAudioProcessorEditor::~MonolizrAudioProcessorEditor()
@@ -17,7 +17,7 @@ MonolizrAudioProcessorEditor::~MonolizrAudioProcessorEditor()
 
 //==============================================================================
 
-void MonolizrAudioProcessorEditor::InitSlider(juce::Slider& slider)
+void MonolizrAudioProcessorEditor::initSlider(juce::Slider& slider)
 {
     slider.setSliderStyle(juce::Slider::RotaryHorizontalDrag);
     slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
@@ -50,12 +50,14 @@ void MonolizrAudioProcessorEditor::paint (juce::Graphics& g)
 {
     g.fillAll(juce::Colours::white);
     g.setColour(juce::Colours::black);
+    g.setFont(12.0f);
+    g.drawSingleLineText(audioProcessor.version, getWidth() - 2, 10, juce::Justification::right);
 
-    LabelSlider(g, monoSlider, "Mode", "Stereo", "Mono ");
-    LabelSlider(g, posiSlider, "Balance", "   Left", "Right ");
+    showSlider(g, monoSlider, "Mode", "Stereo", "Mono ");
+    showSlider(g, posiSlider, "Balance", "   Left", "Right ");
 }
 
-void MonolizrAudioProcessorEditor::LabelSlider(
+void MonolizrAudioProcessorEditor::showSlider(
     juce::Graphics& g,
     juce::Slider& slider,
     juce::String name, 
@@ -63,17 +65,19 @@ void MonolizrAudioProcessorEditor::LabelSlider(
     juce::String highLabel)
 {
     auto bounds = slider.getBounds();
-    const int x = bounds.getX();
-    const int y = bounds.getY();
-    const int w = bounds.getWidth();
-    const int h = bounds.getHeight();
+    const int x1 = bounds.getX();
+    const int x2 = x1 + bounds.getWidth();
+    const int y1 = bounds.getY();
+    const int y2 = y1 + bounds.getHeight();
 
     g.setFont(18.0f);
-    g.drawText(name, x, y - 15, w, h, juce::Justification::centredTop, 1);
+    g.drawSingleLineText(name, (x1 + x2) / 2, y1 + 2, juce::Justification::centred);
 
-    g.setFont(14.0f);
-    g.drawText(lowLabel, x, y, w, h, juce::Justification::bottomLeft, 1);
-    g.drawText(highLabel, x, y, w, h, juce::Justification::bottomRight, 1);
+    g.setFont(15.0f);
+    g.drawSingleLineText(lowLabel, x1, y2, juce::Justification::left);
+
+    g.setFont(15.0f);
+    g.drawSingleLineText(highLabel, x2, y2, juce::Justification::right);
 }
 
 void MonolizrAudioProcessorEditor::resized()

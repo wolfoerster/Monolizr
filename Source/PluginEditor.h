@@ -16,7 +16,7 @@ public:
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
-    void LabelSlider(
+    void showSlider(
         juce::Graphics& g, 
         juce::Slider& slider, 
         juce::String name, 
@@ -26,7 +26,7 @@ public:
 private:
     juce::Slider monoSlider;
     juce::Slider posiSlider;
-    void InitSlider(juce::Slider& monoSlider);
+    void initSlider(juce::Slider& monoSlider);
     void sliderValueChanged(juce::Slider* slider) override;
 
     // This reference is provided as a quick way for your editor to

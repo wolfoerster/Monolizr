@@ -1,5 +1,7 @@
 ﻿#include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include <format>
+#include <iostream>
 
 //==============================================================================
 MonolizrAudioProcessor::MonolizrAudioProcessor()
@@ -158,8 +160,11 @@ void MonolizrAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
     //--- else move to center gradually
     const float p = position / 100.0f; // from -1.0 to +1.0
     const float m = mononess / 100.0f; // from 0.0 to 1.0
-    const float mm = m * m;
+    const float mm = m * m * m * m;
     const float mp = m * p;
+
+    if (secondsPassed(1))
+        log(m, p);
 
     if (p < 0) //--- to the left
     {
