@@ -57,14 +57,10 @@ public:
     /// </summary>
     float position = 0;
 
-    /// <summary>
-    /// The additional gain of the full mono signal between 0 and 100.
-    /// </summary>
-    float monogain = 0;
+    std::string version = "v0.7.5";
 
-    std::string version = "v0.7";
-
-    float m, p, mp, mp2;
+    int blockCount = 0, numSamples = 0, numBlocks = 0;
+    float m = 0, p = 0, mp = 0, mp2 = 0, min = FLT_MAX, max = FLT_MIN;
 
 private:
     //==============================================================================

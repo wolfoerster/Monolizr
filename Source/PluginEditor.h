@@ -26,10 +26,13 @@ public:
     void timerCallback() override
     {
         std::ostringstream oss;
-        oss << "m:" << str(audioProcessor.m, 2)
-            << ", p:" << str(audioProcessor.p, 2)
-            << ", mp:" << str(audioProcessor.mp, 2)
-            << ", mp2:" << str(audioProcessor.mp2, 4);
+        oss << str(audioProcessor.min, 3) << ", "
+            << str(audioProcessor.max, 3) << ", "
+            << audioProcessor.numSamples << ", m:"
+            << str(audioProcessor.m, 2) << ", p:"
+            << str(audioProcessor.p, 2) << ", mp:"
+            << str(audioProcessor.mp, 2) << ", mp2:"
+            << str(audioProcessor.mp2, 4);
 
         label.setText(oss.str(), juce::NotificationType::dontSendNotification);
     }

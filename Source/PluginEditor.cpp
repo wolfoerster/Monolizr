@@ -6,7 +6,7 @@ MonolizrAudioProcessorEditor::MonolizrAudioProcessorEditor (MonolizrAudioProcess
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
 #if DEBUG
-    setSize(240, 160);
+    setSize(320, 160);
 #else
     setSize(240, 132);
 #endif
@@ -17,7 +17,9 @@ MonolizrAudioProcessorEditor::MonolizrAudioProcessorEditor (MonolizrAudioProcess
     label.setColour(juce::Label::textColourId, juce::Colours::black);
     label.setJustificationType(juce::Justification::centred);
 
+#if DEBUG
     startTimer(500);
+#endif
 }
 
 MonolizrAudioProcessorEditor::~MonolizrAudioProcessorEditor()
@@ -31,18 +33,14 @@ void MonolizrAudioProcessorEditor::initSlider(juce::Slider& slider)
     slider.setSliderStyle(juce::Slider::RotaryHorizontalDrag);
     slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     slider.setPopupDisplayEnabled(true, false, this);
-    slider.setValue(0.0);
+    slider.setTextValueSuffix(" %");
 
     if (&slider == &monoSlider)
-    {
-        slider.setTextValueSuffix(" %");
         slider.setRange(0.0, 100.0, 1.0);
-    }
     else
-    {
         slider.setRange(-100.0, 100.0, 1.0);
-    }
 
+    slider.setValue(0.0);
     addAndMakeVisible(slider);
     slider.addListener(this);
 }
@@ -60,7 +58,7 @@ void MonolizrAudioProcessorEditor::paint (juce::Graphics& g)
     g.fillAll(juce::Colours::white);
     g.setColour(juce::Colours::black);
     g.setFont(12.0f);
-    g.drawSingleLineText(audioProcessor.version, getWidth() - 2, 10, juce::Justification::right);
+    g.drawSingleLineText(audioProcessor.version, getWidth() / 2, 10, juce::Justification::horizontallyCentred);
 
     showSlider(g, monoSlider, "Mode", "Stereo", "Mono ");
     showSlider(g, posiSlider, "Balance", "   Left", "Right ");
@@ -91,7 +89,7 @@ void MonolizrAudioProcessorEditor::showSlider(
 
 void MonolizrAudioProcessorEditor::resized()
 {
-    monoSlider.setBounds(10, 20, 100, 100);
-    posiSlider.setBounds(130, 20, 100, 100);
+    monoSlider.setBounds(10, 30, 100, 100);
+    posiSlider.setBounds(130, 30, 100, 100);
     label.setBounds(10, 130, getWidth() - 20, 30);
 }

@@ -22,29 +22,17 @@ const juce::String MonolizrAudioProcessor::getName() const
 
 bool MonolizrAudioProcessor::acceptsMidi() const
 {
-   #if JucePlugin_WantsMidiInput
-    return true;
-   #else
     return false;
-   #endif
 }
 
 bool MonolizrAudioProcessor::producesMidi() const
 {
-   #if JucePlugin_ProducesMidiOutput
-    return true;
-   #else
     return false;
-   #endif
 }
 
 bool MonolizrAudioProcessor::isMidiEffect() const
 {
-   #if JucePlugin_IsMidiEffect
-    return true;
-   #else
     return false;
-   #endif
 }
 
 double MonolizrAudioProcessor::getTailLengthSeconds() const
@@ -65,20 +53,26 @@ int MonolizrAudioProcessor::getCurrentProgram()
 
 void MonolizrAudioProcessor::setCurrentProgram (int index)
 {
+    juce::ignoreUnused(index);
 }
 
 const juce::String MonolizrAudioProcessor::getProgramName (int index)
 {
+    juce::ignoreUnused(index);
     return {};
 }
 
 void MonolizrAudioProcessor::changeProgramName (int index, const juce::String& newName)
 {
+    juce::ignoreUnused(index);
+    juce::ignoreUnused(newName);
 }
 
 //==============================================================================
 void MonolizrAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    juce::ignoreUnused(sampleRate);
+    juce::ignoreUnused(samplesPerBlock);
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
 }
@@ -99,7 +93,7 @@ bool MonolizrAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts)
 //==============================================================================
 bool MonolizrAudioProcessor::hasEditor() const
 {
-    return true; // (change this to false if you choose to not supply an editor)
+    return true;
 }
 
 juce::AudioProcessorEditor* MonolizrAudioProcessor::createEditor()
@@ -110,6 +104,7 @@ juce::AudioProcessorEditor* MonolizrAudioProcessor::createEditor()
 //==============================================================================
 void MonolizrAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
+    juce::ignoreUnused(destData);
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
@@ -117,6 +112,8 @@ void MonolizrAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 
 void MonolizrAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
+    juce::ignoreUnused(data);
+    juce::ignoreUnused(sizeInBytes);
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
 }
@@ -133,10 +130,18 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 /// </summary>
 void MonolizrAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
+    juce::ignoreUnused(midiMessages);
     jassert(buffer.getNumChannels() == 2);
 
+    if (++numBlocks > 220)
+    {
+        min = FLT_MAX;
+        max = FLT_MIN;
+        numBlocks = 0;
+    }
+
     const float amount = mononess / 200.0f; // from 0.0 to 0.5
-    const int numSamples = buffer.getNumSamples();
+    numSamples = buffer.getNumSamples();
     float* leftChannel = buffer.getWritePointer(0);
     float* rightChannel = buffer.getWritePointer(1);
 
@@ -145,6 +150,9 @@ void MonolizrAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
     {
         const float left = leftChannel[i];
         const float right = rightChannel[i];
+
+        min = fmin(min, fmin(left, right));
+        max = fmax(max, fmax(left, right));
 
         leftChannel[i] = left * (1 - amount) + right * amount;
         rightChannel[i] = right * (1 - amount) + left * amount;
@@ -155,7 +163,7 @@ void MonolizrAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
     m = mononess / 100.0f; // from 0.0 to 1.0
     p = position / 100.0f; // from -1.0 to +1.0
     mp = m * p;
-    mp2 = mp * 0.5;
+    mp2 = mp * 0.5f;
 
     //--- for full stereo or centered balance we're done
     if (mononess < 1 || fabs(position) < 1)
