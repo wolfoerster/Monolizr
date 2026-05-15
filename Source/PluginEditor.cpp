@@ -6,15 +6,17 @@ MonolizrAudioProcessorEditor::MonolizrAudioProcessorEditor (MonolizrAudioProcess
     : AudioProcessorEditor (&p), 
     audioProcessor (p), 
     monoAttachment(p.parameters, p.MononessId, monoSlider),
-    posiAttachment(p.parameters, p.PositionId, posiSlider)
+    posiAttachment(p.parameters, p.PositionId, posiSlider),
+    addiAttachment(p.parameters, p.AdditionId, addiSlider)
 {
 #if DEBUG
-    setSize(240, 160);
+    setSize(360, 160);
 #else
-    setSize(240, 132);
+    setSize(360, 132);
 #endif
     initSlider(monoSlider);
     initSlider(posiSlider);
+    initSlider(addiSlider);
 
     addAndMakeVisible(label);
     label.setColour(juce::Label::textColourId, juce::Colours::black);
@@ -37,13 +39,6 @@ void MonolizrAudioProcessorEditor::initSlider(juce::Slider& slider)
     slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     slider.setPopupDisplayEnabled(true, false, this);
     slider.setTextValueSuffix(" %");
-
-    if (&slider == &monoSlider)
-        slider.setRange(0.0, 100.0, 1.0);
-    else
-        slider.setRange(-100.0, 100.0, 1.0);
-
-    slider.setValue(0.0);
     addAndMakeVisible(slider);
 }
 
@@ -56,6 +51,7 @@ void MonolizrAudioProcessorEditor::paint (juce::Graphics& g)
 
     showSlider(g, monoSlider, "Mode", "Stereo", "Mono ");
     showSlider(g, posiSlider, "Balance", "   Left", "Right ");
+    showSlider(g, addiSlider, "B-Gain", "  None", "Full    ");
 }
 
 void MonolizrAudioProcessorEditor::showSlider(
@@ -85,5 +81,6 @@ void MonolizrAudioProcessorEditor::resized()
 {
     monoSlider.setBounds(10, 30, 100, 100);
     posiSlider.setBounds(130, 30, 100, 100);
+    addiSlider.setBounds(250, 30, 100, 100);
     label.setBounds(10, 130, getWidth() - 20, 30);
 }

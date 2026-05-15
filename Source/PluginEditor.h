@@ -25,11 +25,13 @@ public:
     void timerCallback() override
     {
         std::ostringstream oss;
-        oss << str(audioProcessor.min, 3) << ", "
-            << str(audioProcessor.max, 3) << ", m:"
+
+        oss << "m:"
             << str(audioProcessor.m, 2) << ", p:"
             << str(audioProcessor.p, 2) << ", mp:"
-            << str(audioProcessor.mp, 2);
+            << str(audioProcessor.mp, 2) << ", a:"
+            << str(audioProcessor.a, 2) << ", mpa:"
+            << str(audioProcessor.mpa, 2);
 
         label.setText(oss.str(), juce::NotificationType::dontSendNotification);
     }
@@ -40,6 +42,9 @@ private:
 
     juce::Slider posiSlider;
     juce::AudioProcessorValueTreeState::SliderAttachment posiAttachment;
+
+    juce::Slider addiSlider;
+    juce::AudioProcessorValueTreeState::SliderAttachment addiAttachment;
 
     juce::Label label;
     void initSlider(juce::Slider& monoSlider);

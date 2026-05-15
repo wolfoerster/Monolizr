@@ -47,14 +47,16 @@ public:
 
     const std::string MononessId = "MononessId";
     const std::string PositionId = "PositionId";
+    const std::string AdditionId = "AdditionId";
 
-    std::string version = "v0.7.12";
+    std::string version = "v0.7.16";
     juce::AudioProcessorValueTreeState parameters;
-    float m = 0, p = 0, mp = 0, min = 1, max = -1;
+    float m = 0, p = 0, mp = 0, a = 0, mpa = 0;
 
 private:
     std::atomic<float>* mononessParameter = nullptr;
     std::atomic<float>* positionParameter = nullptr;
+    std::atomic<float>* additionParameter = nullptr;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MonolizrAudioProcessor)

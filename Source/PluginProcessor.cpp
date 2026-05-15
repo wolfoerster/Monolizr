@@ -13,10 +13,14 @@ MonolizrAudioProcessor::MonolizrAudioProcessor()
 
             std::make_unique<juce::AudioParameterFloat>(PositionId, "Position",
                 juce::NormalisableRange<float>(-100.0f, 100.0f, 2.0f), 0.0f),
+
+            std::make_unique<juce::AudioParameterFloat>(AdditionId, "Addition",
+                juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f), 50.0f),
         })
 {
     mononessParameter = parameters.getRawParameterValue(MononessId);
     positionParameter = parameters.getRawParameterValue(PositionId);
+    additionParameter = parameters.getRawParameterValue(AdditionId);
 }
 
 MonolizrAudioProcessor::~MonolizrAudioProcessor()
@@ -82,8 +86,6 @@ void MonolizrAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 {
     juce::ignoreUnused(sampleRate);
     juce::ignoreUnused(samplesPerBlock);
-    min = 1;
-    max = -1;
 }
 
 void MonolizrAudioProcessor::releaseResources()
@@ -145,6 +147,13 @@ void MonolizrAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
 
     const float mononess = mononessParameter->load();
     const float position = positionParameter->load();
+    const float addition = additionParameter->load();
+
+    m = mononess / 100.0f; // from 0.0 to 1.0
+    p = position / 100.0f; // from -1.0 to +1.0
+    a = addition / 20.0f; // from 0.0 to +5.0
+    mp = m * p;
+    mpa = mp * a;
 
     const float amount = mononess / 200.0f; // from 0.0 to 0.5
     const int numSamples = buffer.getNumSamples();
@@ -157,20 +166,12 @@ void MonolizrAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
         const float left = leftChannel[i];
         const float right = rightChannel[i];
 
-        min = fmin(min, fmin(left, right));
-        max = fmax(max, fmax(left, right));
-
         leftChannel[i] = left * (1 - amount) + right * amount;
         rightChannel[i] = right * (1 - amount) + left * amount;
     }
 
     //--- for full stereo or centered balance we're done
-    m = mononess / 100.0f; // from 0.0 to 1.0
-    p = position / 100.0f; // from -1.0 to +1.0
-    mp = m * p;
-    const float mp2 = mp * 2.5f;
-
-    if (mononess < 1 || fabs(position) < 1)
+    if (mononess < 1 || fabs(position) < 2)
         return;
 
     //--- for full mono move signal to parameter 'position' (-100 (L) .. +100 (R))
@@ -183,7 +184,7 @@ void MonolizrAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
             rightChannel[i] *= (1 + mp);
 
             //--- increase left channel
-            leftChannel[i] *= (1 - mp2);
+            leftChannel[i] *= (1 - mpa);
         }
     }
     else // to the right
@@ -194,7 +195,7 @@ void MonolizrAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
             leftChannel[i] *= (1 - mp);
 
             //--- increase right channel
-            rightChannel[i] *= (1 + mp2);
+            rightChannel[i] *= (1 + mpa);
         }
     }
 }
