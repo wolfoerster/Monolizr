@@ -61,7 +61,12 @@ public:
 
     float m = 0, p = 0, mp = 0, mp2 = 0, min = 1, max = -1;
 
+    juce::AudioProcessorValueTreeState parameters;
+
 private:
+    std::atomic<float>* balanceParameter = nullptr;
+    static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MonolizrAudioProcessor)
 };

@@ -1,13 +1,16 @@
 ﻿#include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+const std::string Balance = "Balance";
+
 //==============================================================================
 MonolizrAudioProcessor::MonolizrAudioProcessor()
-     : AudioProcessor (BusesProperties()
+    : AudioProcessor (BusesProperties()
                        .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
-                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-                       )
+                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)),
+    parameters(*this, nullptr, juce::Identifier("Parameters"), createParameterLayout())
 {
+    balanceParameter = parameters.getRawParameterValue(Balance);
 }
 
 MonolizrAudioProcessor::~MonolizrAudioProcessor()
@@ -133,6 +136,8 @@ void MonolizrAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
     juce::ignoreUnused(midiMessages);
     jassert(buffer.getNumChannels() == 2);
 
+    auto balance = balanceParameter->load();
+
     const float amount = mononess / 200.0f; // from 0.0 to 0.5
     const int numSamples = buffer.getNumSamples();
     float* leftChannel = buffer.getWritePointer(0);
@@ -184,4 +189,14 @@ void MonolizrAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
             rightChannel[i] *= (1 + mp2);
         }
     }
+}
+
+juce::AudioProcessorValueTreeState::ParameterLayout MonolizrAudioProcessor::createParameterLayout()
+{
+    juce::AudioProcessorValueTreeState::ParameterLayout layout;
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>(Balance, Balance,
+        juce::NormalisableRange<float>(-100.0f, 100.0f, 2.0f), -2.0f));
+
+    return layout;
 }
