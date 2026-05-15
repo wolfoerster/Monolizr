@@ -73,8 +73,8 @@ void MonolizrAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 {
     juce::ignoreUnused(sampleRate);
     juce::ignoreUnused(samplesPerBlock);
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+    min = 1;
+    max = -1;
 }
 
 void MonolizrAudioProcessor::releaseResources()
@@ -133,15 +133,8 @@ void MonolizrAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
     juce::ignoreUnused(midiMessages);
     jassert(buffer.getNumChannels() == 2);
 
-    if (++numBlocks > 220)
-    {
-        min = FLT_MAX;
-        max = FLT_MIN;
-        numBlocks = 0;
-    }
-
     const float amount = mononess / 200.0f; // from 0.0 to 0.5
-    numSamples = buffer.getNumSamples();
+    const int numSamples = buffer.getNumSamples();
     float* leftChannel = buffer.getWritePointer(0);
     float* rightChannel = buffer.getWritePointer(1);
 

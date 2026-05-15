@@ -57,10 +57,9 @@ public:
     /// </summary>
     float position = 0;
 
-    std::string version = "v0.7.5";
+    std::string version = "v0.7.6";
 
-    int blockCount = 0, numSamples = 0, numBlocks = 0;
-    float m = 0, p = 0, mp = 0, mp2 = 0, min = FLT_MAX, max = FLT_MIN;
+    float m = 0, p = 0, mp = 0, mp2 = 0, min = 1, max = -1;
 
 private:
     //==============================================================================

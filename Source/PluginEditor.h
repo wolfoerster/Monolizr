@@ -27,8 +27,7 @@ public:
     {
         std::ostringstream oss;
         oss << str(audioProcessor.min, 3) << ", "
-            << str(audioProcessor.max, 3) << ", "
-            << audioProcessor.numSamples << ", m:"
+            << str(audioProcessor.max, 3) << ", m:"
             << str(audioProcessor.m, 2) << ", p:"
             << str(audioProcessor.p, 2) << ", mp:"
             << str(audioProcessor.mp, 2) << ", mp2:"
