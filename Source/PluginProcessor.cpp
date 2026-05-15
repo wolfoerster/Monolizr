@@ -151,7 +151,7 @@ void MonolizrAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
 
     m = mononess / 100.0f; // from 0.0 to 1.0
     p = position / 100.0f; // from -1.0 to +1.0
-    a = addition / 20.0f; // from 0.0 to +5.0
+    a = addition / 25.0f; // from 0.0 to +4.0
     mp = m * p;
     mpa = mp * a;
 

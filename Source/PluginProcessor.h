@@ -49,7 +49,7 @@ public:
     const std::string PositionId = "PositionId";
     const std::string AdditionId = "AdditionId";
 
-    std::string version = "v0.7.16";
+    std::string version = "v0.7.17";
     juce::AudioProcessorValueTreeState parameters;
     float m = 0, p = 0, mp = 0, a = 0, mpa = 0;
 

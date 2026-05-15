@@ -12,7 +12,7 @@ MonolizrAudioProcessorEditor::MonolizrAudioProcessorEditor (MonolizrAudioProcess
 #if DEBUG
     setSize(360, 160);
 #else
-    setSize(360, 132);
+    setSize(360, 140);
 #endif
     initSlider(monoSlider);
     initSlider(posiSlider);
