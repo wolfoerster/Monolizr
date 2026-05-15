@@ -1,16 +1,22 @@
 ﻿#include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-const std::string Balance = "Balance";
-
 //==============================================================================
 MonolizrAudioProcessor::MonolizrAudioProcessor()
     : AudioProcessor (BusesProperties()
-                       .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
-                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)),
-    parameters(*this, nullptr, juce::Identifier("Parameters"), createParameterLayout())
+                       .withInput ("Input", juce::AudioChannelSet::stereo(), true)
+                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)), 
+    parameters(*this, nullptr, juce::Identifier("Parameters"), 
+        {
+            std::make_unique<juce::AudioParameterFloat>(MononessId, "Mononess",
+                juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f), 0.0f),
+
+            std::make_unique<juce::AudioParameterFloat>(PositionId, "Position",
+                juce::NormalisableRange<float>(-100.0f, 100.0f, 2.0f), 0.0f),
+        })
 {
-    balanceParameter = parameters.getRawParameterValue(Balance);
+    mononessParameter = parameters.getRawParameterValue(MononessId);
+    positionParameter = parameters.getRawParameterValue(PositionId);
 }
 
 MonolizrAudioProcessor::~MonolizrAudioProcessor()
@@ -107,18 +113,19 @@ juce::AudioProcessorEditor* MonolizrAudioProcessor::createEditor()
 //==============================================================================
 void MonolizrAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    juce::ignoreUnused(destData);
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+    auto state = parameters.copyState();
+    std::unique_ptr<juce::XmlElement> xml(state.createXml());
+    copyXmlToBinary(*xml, destData);
 }
 
 void MonolizrAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     juce::ignoreUnused(data);
     juce::ignoreUnused(sizeInBytes);
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+    std::unique_ptr<juce::XmlElement> xml(getXmlFromBinary(data, sizeInBytes));
+
+    if (xml != nullptr && xml->hasTagName(parameters.state.getType()))
+        parameters.replaceState(juce::ValueTree::fromXml(*xml));
 }
 
 //==============================================================================
@@ -136,7 +143,8 @@ void MonolizrAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
     juce::ignoreUnused(midiMessages);
     jassert(buffer.getNumChannels() == 2);
 
-    auto balance = balanceParameter->load();
+    const float mononess = mononessParameter->load();
+    const float position = positionParameter->load();
 
     const float amount = mononess / 200.0f; // from 0.0 to 0.5
     const int numSamples = buffer.getNumSamples();
@@ -156,17 +164,17 @@ void MonolizrAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
         rightChannel[i] = right * (1 - amount) + left * amount;
     }
 
-    //--- for full mono move signal to parameter 'position' (-100 (L) .. +100 (R))
-    //--- else move to center gradually
+    //--- for full stereo or centered balance we're done
     m = mononess / 100.0f; // from 0.0 to 1.0
     p = position / 100.0f; // from -1.0 to +1.0
     mp = m * p;
-    mp2 = mp * 0.5f;
+    const float mp2 = mp * 2.5f;
 
-    //--- for full stereo or centered balance we're done
     if (mononess < 1 || fabs(position) < 1)
         return;
 
+    //--- for full mono move signal to parameter 'position' (-100 (L) .. +100 (R))
+    //--- else move to center gradually
     if (p < 0) //--- to the left
     {
         for (int i = 0; i < numSamples; ++i)
@@ -189,14 +197,4 @@ void MonolizrAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce
             rightChannel[i] *= (1 + mp2);
         }
     }
-}
-
-juce::AudioProcessorValueTreeState::ParameterLayout MonolizrAudioProcessor::createParameterLayout()
-{
-    juce::AudioProcessorValueTreeState::ParameterLayout layout;
-
-    layout.add(std::make_unique<juce::AudioParameterFloat>(Balance, Balance,
-        juce::NormalisableRange<float>(-100.0f, 100.0f, 2.0f), -2.0f));
-
-    return layout;
 }

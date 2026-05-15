@@ -3,10 +3,13 @@
 
 //==============================================================================
 MonolizrAudioProcessorEditor::MonolizrAudioProcessorEditor (MonolizrAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p)
+    : AudioProcessorEditor (&p), 
+    audioProcessor (p), 
+    monoAttachment(p.parameters, p.MononessId, monoSlider),
+    posiAttachment(p.parameters, p.PositionId, posiSlider)
 {
 #if DEBUG
-    setSize(320, 160);
+    setSize(240, 160);
 #else
     setSize(240, 132);
 #endif
@@ -42,15 +45,6 @@ void MonolizrAudioProcessorEditor::initSlider(juce::Slider& slider)
 
     slider.setValue(0.0);
     addAndMakeVisible(slider);
-    slider.addListener(this);
-}
-
-void MonolizrAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
-{
-    if (slider == &monoSlider)
-        audioProcessor.mononess = (float)monoSlider.getValue();
-    else
-        audioProcessor.position = (float)posiSlider.getValue();
 }
 
 void MonolizrAudioProcessorEditor::paint (juce::Graphics& g)

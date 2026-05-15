@@ -6,8 +6,7 @@
 //==============================================================================
 /**
 */
-class MonolizrAudioProcessorEditor  : public juce::AudioProcessorEditor,
-    private juce::Slider::Listener, public juce::Timer
+class MonolizrAudioProcessorEditor : public juce::AudioProcessorEditor, public juce::Timer
 {
 public:
     MonolizrAudioProcessorEditor (MonolizrAudioProcessor&);
@@ -30,18 +29,20 @@ public:
             << str(audioProcessor.max, 3) << ", m:"
             << str(audioProcessor.m, 2) << ", p:"
             << str(audioProcessor.p, 2) << ", mp:"
-            << str(audioProcessor.mp, 2) << ", mp2:"
-            << str(audioProcessor.mp2, 4);
+            << str(audioProcessor.mp, 2);
 
         label.setText(oss.str(), juce::NotificationType::dontSendNotification);
     }
 
 private:
     juce::Slider monoSlider;
+    juce::AudioProcessorValueTreeState::SliderAttachment monoAttachment;
+
     juce::Slider posiSlider;
+    juce::AudioProcessorValueTreeState::SliderAttachment posiAttachment;
+
     juce::Label label;
     void initSlider(juce::Slider& monoSlider);
-    void sliderValueChanged(juce::Slider* slider) override;
 
     std::string str(double a, int precision = 6) {
         std::ostringstream oss;

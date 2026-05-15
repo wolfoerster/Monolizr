@@ -2,8 +2,6 @@
 
 #include <JuceHeader.h>
 
-using namespace std::chrono;
-
 //==============================================================================
 /**
 */
@@ -47,25 +45,16 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
-    /// <summary>
-    /// The amount of signal being mono in percent (0 = full stereo, 100 = full mono).
-    /// </summary>
-    float mononess = 0;
+    const std::string MononessId = "MononessId";
+    const std::string PositionId = "PositionId";
 
-    /// <summary>
-    /// The position of the full mono signal between -100 (full left) and +100 (full right).
-    /// </summary>
-    float position = 0;
-
-    std::string version = "v0.7.6";
-
-    float m = 0, p = 0, mp = 0, mp2 = 0, min = 1, max = -1;
-
+    std::string version = "v0.7.12";
     juce::AudioProcessorValueTreeState parameters;
+    float m = 0, p = 0, mp = 0, min = 1, max = -1;
 
 private:
-    std::atomic<float>* balanceParameter = nullptr;
-    static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+    std::atomic<float>* mononessParameter = nullptr;
+    std::atomic<float>* positionParameter = nullptr;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MonolizrAudioProcessor)
